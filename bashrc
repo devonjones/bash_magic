@@ -7,7 +7,6 @@ function include_d {
 	dir=$1
 	if [ -d ~/.$dir.d -a -r ~/.$dir.d -a -x ~/.$dir.d ]; then
 		for i in ~/.$dir.d/*.sh; do
-			echo $i
 			 . $i
 		done
 	fi
