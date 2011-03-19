@@ -2,7 +2,7 @@
 # the ~/.bash_aliases file.
 add_alias () {
 	local name=$1 value="$2"
-	echo alias $name=\'$value\' >>~/.bash_aliases
+	echo alias $name=\'$value\' >> $HOME/.bash_aliases
 	eval alias $name=\'$value\'
 	alias $name
 }
