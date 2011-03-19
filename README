@@ -1,0 +1,58 @@
+structured bashrc to allow for much easier understanding and handling of what shell changes you have set up.
+
+
+DESIGN
+
+Instead of keeping my bashrc all in one file that becomes a giant mess, I've split the file out into a bunch of small shell scripts that the main bashrc automatically imports.  This results in the followingdirectory setup:
+
+~/.bashrc
+~/.bash_aliases.d/
+~/.bash_completion.d/
+~/.bash_functions.d/
+
+The base .bashrc (or can be renamed .bash_profile for those of you that use .bash_profile instead) contains only 4 things:
+
+1) a break for non interactive shells that stops any of it loading
+2) The addition of ~/bin to the path
+3) definition of the include_d function
+4) imports of the 3 above directories.
+
+Inside each directory, only files with the .sh extension will be sourced.  The directory names are obvious, but I'll detail what's contained just to be complete.
+
+
+BASH_ALIASES.D
+
+This directory is intended to hold a bunch of files setting up all of your aliases.  It's preferred to keep only aliases that are closely related in the same file so that other people can easily pick up chucks of your alias behavior without having to import it all.  Personally, I keep one for color terminals, my editor, filesystem commands and then a series of alias files for dealing with individual programs.
+
+
+BASH_COMPLETION.D
+
+Personally I find bash completion super useful, so I keep a whole directory for dealing with completions.  Timple, one file per program is the expected usage.
+
+
+BASH_FUNCTIONS.D
+
+This directory is much more of a grab bag then the above two.  It contains a seperate file for each discrete functional behavior I'm making to my shell.  Some files contain only actual bash functions, some add functionality like eternal_bash_history.
+
+
+USAGE
+
+Until I get around to creating an install program, my suggestion is that you do the following to install this:
+
+1) Copy the contents of bashrc and append it onto the end of your .bashrc or .bash_profile
+  `cat bashrc >> ~/.bashrc`
+  -or-
+  `cat bashrc >> ~/.bash_profile
+
+2) Create your .d directories
+  `mkdir ~/.bash_aliases.d ~/.bash_completion.d ~/.bash_functions.d`
+
+3) Symlink any functionality you want from bash_magic into the appropriate directory
+  `cd ~/.bash_functions.d`
+  `ln -s <bash_magic project dir>/.bash_functions/eternal_history.sh`
+  <repeat as needed>
+
+4) Go through your existing .bashrc/.bash_profile and pull coherent chunks of functionality out and stuff it into new files in the appropriate directory
+
+5) Live a happier life knowing that your old messy bashrc is now a heck of a lot easier to understand.
+
