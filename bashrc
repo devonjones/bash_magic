@@ -14,3 +14,4 @@ function include_d {
 
 include_d bash_functions
 include_d bash_aliases
+include_d bash_completion
