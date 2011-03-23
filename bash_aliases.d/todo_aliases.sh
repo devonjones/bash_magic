@@ -11,5 +11,5 @@ alias trm='todo.sh rm'
 alias tarc='todo.sh archive'
 alias tdo='todo.sh do'
 alias tsch='todo.sh schedule'
-alias gt="/usr/bin/gvim --servername GVIM --remote ~/Dropbox/todo/todo.txt"
+alias gt="/usr/bin/gvim --servername GVIM --remote $HOME/Dropbox/todo/todo.txt"
 

@@ -5,8 +5,8 @@ export PATH=$PATH:$HOME/bin
 
 function include_d {
 	dir=$1
-	if [ -d ~/.$dir.d -a -r ~/.$dir.d -a -x ~/.$dir.d ]; then
-		for i in ~/.$dir.d/*.sh; do
+	if [ -d $HOME/.$dir.d -a -r $HOME/.$dir.d -a -x $HOME/.$dir.d ]; then
+		for i in $HOME/.$dir.d/*.sh; do
 			 . $i
 		done
 	fi
@@ -14,3 +14,4 @@ function include_d {
 
 include_d bash_functions
 include_d bash_aliases
+include_d bash_completion
