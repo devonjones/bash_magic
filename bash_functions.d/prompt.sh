@@ -1,7 +1,111 @@
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
-	debian_chroot=$(cat /etc/debian_chroot)
-fi
+function __git_branch {
+	__git_ps1 "%s"
+}
+
+highlight() {
+	if [ -x /usr/bin/tput ]
+	then
+		if [ $2 -eq 1 ]
+		then
+			tput bold
+		fi
+		tput setaf $1
+	fi
+	shift
+	printf -- "$@"
+	if [ -x /usr/bin/tput ]
+	then
+		tput sgr0
+	fi
+}
+
+highlight_exit_code() {
+	exit_code=$?
+	if [ $exit_code -ne 0 ]
+	then
+		highlight 1 1 "$exit_code "
+	else
+		highlight 2 0 "$exit_code "
+	fi
+}
+
+function set_prompt {
+	local NONE="\[\033[0m\]"    # unsets color to term's fg color
+
+	# regular colors
+	local K="\[\033[0;30m\]"    # black
+	local R="\[\033[0;31m\]"    # red
+	local G="\[\033[0;32m\]"    # green
+	local Y="\[\033[0;33m\]"    # yellow
+	local B="\[\033[0;34m\]"    # blue
+	local M="\[\033[0;35m\]"    # magenta
+	local C="\[\033[0;36m\]"    # cyan
+	local W="\[\033[0;37m\]"    # white
+
+	# emphasized (bolded) colors
+	local EMK="\[\033[1;30m\]"
+	local EMR="\[\033[1;31m\]"
+	local EMG="\[\033[1;32m\]"
+	local EMY="\[\033[1;33m\]"
+	local EMB="\[\033[1;34m\]"
+	local EMM="\[\033[1;35m\]"
+	local EMC="\[\033[1;36m\]"
+	local EMW="\[\033[1;37m\]"
+
+	# background colors
+	local BGK="\[\033[40m\]"
+	local BGR="\[\033[41m\]"
+	local BGG="\[\033[42m\]"
+	local BGY="\[\033[43m\]"
+	local BGB="\[\033[44m\]"
+	local BGM="\[\033[45m\]"
+	local BGC="\[\033[46m\]"
+	local BGW="\[\033[47m\]"
+
+	# set variable identifying the chroot you work in (used in the prompt below)
+	if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+		debian_chroot=$(cat /etc/debian_chroot)
+	fi
+
+	if [ `id -u` = 0 ]
+	then
+		#root
+		echo -ne "${debian_chroot:+($debian_chroot)}$EMR\u@\h$NONE \$(highlight_exit_code) $R\w \$$NONE "
+	else
+		fulldir="$EMB\w$NONE"
+		cdup=`git rev-parse --show-cdup 2> /dev/null`
+		if [ ! -z "$cdup" ]
+		then
+			color=$EMM
+			git diff --quiet HEAD &>/dev/null 
+			if [ $? == 1 ]
+			then
+				color=$R
+			fi
+			dir=$(cd "$cdup";pwd)
+			pdir=`pwd`
+			retract=${dir/$HOME/\~}
+			local=${pdir/$dir/}
+			untracked=''
+			if [ "x$(git stash list | head -n 1)" != "x" ]; then
+				untracked="$EMY\$$NONE"
+			fi
+			if [ "x$(git status | grep Untracked)" != "x" ]; then
+				untracked="$untracked$EMR%$NONE"
+			fi
+			fulldir="$EMB$retract$color$local $EMW\$(__git_branch) $untracked$NONE "
+		else
+			pdir=`pwd`
+			retract=${pdir/$HOME/\~}
+			fulldir="$EMB$retract$NONE "
+		fi
+		echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \$(highlight_exit_code) $fulldir$EMB\$$NONE "
+	fi
+}
+#export GIT_PS1_SHOWDIRTYSTATE=1
+#export GIT_PS1_SHOWSTASHSTATE=1
+#export GIT_PS1_SHOWUNTRACKEDFILES=yes
+export GIT_PS1_SHOWUPSTREAM="auto"
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
@@ -23,13 +127,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-	if [ `id -u` = 0 ]
-	then
-		#root
-		PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\] \[\033[00;32m\]${?} \[\033[00;31m\]\w \$\[\033[00m\] '
-	else
-		PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[00;32m\]${?} \[\033[01;34m\]\w \$\[\033[00m\] '
-	fi
+	export PROMPT_COMMAND='PS1="$(set_prompt)"'
 else
 	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
