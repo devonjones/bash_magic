@@ -56,4 +56,3 @@ function exit_if_running() {
 		exit 0
 	fi
 }
-
