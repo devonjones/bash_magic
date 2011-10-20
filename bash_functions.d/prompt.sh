@@ -5,10 +5,6 @@ function __git_branch {
 highlight() {
 	if [ -x /usr/bin/tput ]
 	then
-		if [ $2 -eq 1 ]
-		then
-			tput bold
-		fi
 		tput setaf $1
 	fi
 	shift
@@ -23,9 +19,9 @@ highlight_exit_code() {
 	exit_code=$?
 	if [ $exit_code -ne 0 ]
 	then
-		highlight 1 1 "$exit_code "
+		highlight 1 "$exit_code"
 	else
-		highlight 2 0 "$exit_code "
+		highlight 2 "$exit_code"
 	fi
 }
 
@@ -87,19 +83,22 @@ function set_prompt {
 			retract=${dir/$HOME/\~}
 			local=${pdir/$dir/}
 			untracked=''
+			space=''
 			if [ "x$(git stash list | head -n 1)" != "x" ]; then
+				space=' '
 				untracked="$EMY\$$NONE"
 			fi
 			if [ "x$(git status | grep Untracked)" != "x" ]; then
+				space=' '
 				untracked="$untracked$EMR%$NONE"
 			fi
-			fulldir="$EMB$retract$color$local $EMW\$(__git_branch) $untracked$NONE "
+			fulldir="$EMB$retract$color$local $EMW\$(__git_branch)$space$untracked$NONE "
 		else
 			pdir=`pwd`
 			retract=${pdir/$HOME/\~}
 			fulldir="$EMB$retract$NONE "
 		fi
-		echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \$(highlight_exit_code) $fulldir$EMB\$$NONE "
+		echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \[\$(highlight_exit_code)\] $fulldir$EMB\$$NONE "
 	fi
 }
 #export GIT_PS1_SHOWDIRTYSTATE=1
