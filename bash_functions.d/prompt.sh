@@ -70,7 +70,8 @@ function set_prompt {
 	else
 		fulldir="$EMB\w$NONE"
 		cdup=`git rev-parse --show-cdup 2> /dev/null`
-		if [ ! -z "$cdup" ]
+		if [ $? == 0 ]
+		#if [ ! -z "$cdup" ]
 		then
 			color=$EMM
 			git diff --quiet HEAD &>/dev/null 
@@ -81,7 +82,7 @@ function set_prompt {
 			dir=$(cd "$cdup";pwd)
 			pdir=`pwd`
 			retract=${dir/$HOME/\~}
-			local=${pdir/$dir/}
+			local="${pdir/$dir/}/"
 			untracked=''
 			space=''
 			if [ "x$(git stash list | head -n 1)" != "x" ]; then
