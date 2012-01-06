@@ -99,7 +99,8 @@ function set_prompt {
 			retract=${pdir/$HOME/\~}
 			fulldir="$EMB$retract$NONE "
 		fi
-		echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \[\$(highlight_exit_code)\] $fulldir$EMB\$$NONE "
+		#echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \[\$(highlight_exit_code)\] $fulldir$EMB\$$NONE "
+		echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE $? $fulldir$EMB\$$NONE "
 	fi
 }
 #export GIT_PS1_SHOWDIRTYSTATE=1
