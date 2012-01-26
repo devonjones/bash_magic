@@ -142,3 +142,5 @@ xterm*|rxvt*)
 *)
 	;;
 esac
+# From eternal_history as this file overrides that behavior unfortunatly.
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"'echo $$ $USER "$(history 1)" >> $HOME/.bash_eternal_history'
