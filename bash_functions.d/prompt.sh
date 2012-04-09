@@ -63,6 +63,11 @@ function set_prompt {
 		debian_chroot=$(cat /etc/debian_chroot)
 	fi
 
+	virtualenv=''
+	if [[ -n "$VIRTUAL_ENV" ]]
+	then
+		virtualenv="$EMR(`basename $VIRTUAL_ENV`)$NONE "
+	fi
 	if [ `id -u` = 0 ]
 	then
 		#root
@@ -100,7 +105,7 @@ function set_prompt {
 			fulldir="$EMB$retract$NONE "
 		fi
 		#echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \[\$(highlight_exit_code)\] $fulldir$EMB\$$NONE "
-		echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE $EMW$?$NONE $fulldir$EMB\$$NONE "
+		echo -ne "$virtualenv${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE $EMW$?$NONE $fulldir$EMB\$$NONE "
 	fi
 }
 #export GIT_PS1_SHOWDIRTYSTATE=1
