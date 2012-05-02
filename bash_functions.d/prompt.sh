@@ -2,29 +2,6 @@ function __git_branch {
 	__git_ps1 "%s"
 }
 
-highlight() {
-	if [ -x /usr/bin/tput ]
-	then
-		tput setaf $1
-	fi
-	shift
-	printf -- "$@"
-	if [ -x /usr/bin/tput ]
-	then
-		tput sgr0
-	fi
-}
-
-highlight_exit_code() {
-	exit_code=$?
-	if [ $exit_code -ne 0 ]
-	then
-		highlight 1 "$exit_code"
-	else
-		highlight 2 "$exit_code"
-	fi
-}
-
 function set_prompt {
 	exit_code=$?
 	local NONE="\[\033[0m\]"    # unsets color to term's fg color
@@ -69,10 +46,15 @@ function set_prompt {
 	then
 		virtualenv="$EMR(`basename $VIRTUAL_ENV`)$NONE "
 	fi
+	codecolor=$EMW
+	if [ $exit_code -ne 0 ]
+	then
+		codecolor=$EMR
+	fi
 	if [ `id -u` = 0 ]
 	then
 		#root
-		echo -ne "${debian_chroot:+($debian_chroot)}$EMR\u@\h$NONE \$(highlight_exit_code) $R\w \$$NONE "
+		echo -ne "${debian_chroot:+($debian_chroot)}$EMR\u@\h$NONE $colorcode$exit_code$NONE $R\w \$$NONE "
 	else
 		fulldir="$EMB\w$NONE"
 		cdup=`git rev-parse --show-cdup 2> /dev/null`
@@ -105,12 +87,6 @@ function set_prompt {
 			retract=${pdir/$HOME/\~}
 			fulldir="$EMB$retract$NONE "
 		fi
-		codecolor=$EMW
-		if [ $exit_code -ne 0 ]
-		then
-			codecolor=$EMR
-		fi
-		#echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \[\$(highlight_exit_code)\] $fulldir$EMB\$$NONE "
 		echo -ne "$virtualenv${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE $codecolor$exit_code$NONE $fulldir$EMB\$$NONE $(eternal_history $exit_code)"
 	fi
 }
