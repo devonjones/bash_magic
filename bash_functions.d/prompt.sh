@@ -26,6 +26,7 @@ highlight_exit_code() {
 }
 
 function set_prompt {
+	exit_code=$?
 	local NONE="\[\033[0m\]"    # unsets color to term's fg color
 
 	# regular colors
@@ -104,10 +105,21 @@ function set_prompt {
 			retract=${pdir/$HOME/\~}
 			fulldir="$EMB$retract$NONE "
 		fi
+		codecolor=$EMW
+		if [ $exit_code -ne 0 ]
+		then
+			codecolor=$EMR
+		fi
 		#echo -ne "${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE \[\$(highlight_exit_code)\] $fulldir$EMB\$$NONE "
-		echo -ne "$virtualenv${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE $EMW$?$NONE $fulldir$EMB\$$NONE "
+		echo -ne "$virtualenv${debian_chroot:+($debian_chroot)}$EMG\u@\h$NONE $codecolor$exit_code$NONE $fulldir$EMB\$$NONE $(eternal_history $exit_code)"
 	fi
 }
+
+function eternal_history() {
+	exit_code=$1
+	echo $$ $USER $exit_code "$(history 1)" >> $HOME/.bash_eternal_history
+}
+
 #export GIT_PS1_SHOWDIRTYSTATE=1
 #export GIT_PS1_SHOWSTASHSTATE=1
 #export GIT_PS1_SHOWUNTRACKEDFILES=yes
@@ -147,5 +159,4 @@ xterm*|rxvt*)
 *)
 	;;
 esac
-# From eternal_history as this file overrides that behavior unfortunatly.
-PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"'echo $$ $USER "$(history 1)" >> $HOME/.bash_eternal_history'
+
