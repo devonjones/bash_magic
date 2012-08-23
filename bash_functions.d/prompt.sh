@@ -1,5 +1,5 @@
 function __git_branch {
-	__git_ps1 "%s"
+	git branch 2>/dev/null | grep '*' | sed 's/* \(.*\)/(\1)/'
 }
 
 function set_prompt {
@@ -107,7 +107,7 @@ case "$TERM" in
 	xterm) color_prompt=yes;;
 esac
 
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
 	if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
